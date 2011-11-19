@@ -57,7 +57,7 @@
 (recentf-mode 1)
 (setq recentf-max-saved-items 120)
 (blink-cursor-mode 1)
-(setq bookmark-default-file "~/.emacs.d/bookmarks" bookmark-save-flag 1)
+(setq bookmark-default-file (expand-file-name "~/.emacs.d/bookmarks") bookmark-save-flag 1)
 (windmove-default-keybindings)
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
@@ -68,7 +68,7 @@
 ;(bbdb-initialize)
 
 (defmacro safe-off (mode)
-  "Call the function mode with -1 arg if it is fboundp"
+  "Call the function mode with arg -1 if it is fboundp"
   `(if (fboundp (quote ,mode))
        (,mode -1)))
 
@@ -102,25 +102,35 @@
 ;;; System specific
 (case system-type
   ('darwin
+   (setenv "SBCL_HOME" (expand-file-name "~/sw/sbcl/lib/sbcl"))
    (setq ns-command-modifier 'meta)
    (setq ns-right-alternate-modifier 'control)
    (if (fboundp 'menu-bar-mode)
        (menu-bar-mode nil)))
   ('gnu/linux)
   ('windows-nt
-   (setenv "PATH" (concat "C:\\cygwin\\bin" (getenv "PATH")))
+   (setenv "PATH" (concat "C:\\cygwin\\bin:" (getenv "PATH")))
    (setenv "DISPLAY" nil))
   (t
    (warn (format "System type %a not recognized" system-type))))
 
 ;;; Various programming modes
 (add-to-list 'auto-mode-alist '("\\.asd$" . lisp-mode))
-(autoload 'js2-mode "js2" nil t)
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(defun make-dir-file (base part)
+  (expand-file-name
+   (concat (file-name-as-directory base)
+           part)))
+
+(defun emacs-dir-file (part) (make-dir-file "~/.emacs.d" part))
+(defun home-dir-file (part) (make-dir-file "~" part))
+
+(when (file-exists-p (expand-file-name (emacs-dir-file "js2.el")))
+  (autoload 'js2-mode "js2" nil t)
+  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode)))
 
 (defun setup-ocaml ()
   (interactive)
-  (add-to-list 'load-path "~/.emacs.d/ocaml")
+  (add-to-list 'load-path (emacs-dir-file "ocaml"))
   (add-to-list 'auto-mode-alist '("\\.ml[iyl]?$" . caml-mode))
   (require 'ocaml)
   (autoload 'caml-mode "ocaml" (interactive)
@@ -129,34 +139,41 @@
 
 (defun setup-racket ()
   (interactive)
-  (load-file "~/.emacs.d/geiser-0.1.3/elisp/geiser.el")
-  (setq geiser-racket-binary "~/sw/Racket v5.2/bin/racket"))
+  (load-file (emacs-dir-file "geiser-0.1.3/elisp/geiser.el"))
+  (setq geiser-racket-binary (home-dir-file "sw/Racket v5.2/bin/racket")))
 
-(defun setup-slime ()
-  (interactive)
-  (setenv "SBCL_HOME" "/Users/mjc/sw/sbcl/lib/sbcl")
-  (add-to-list 'load-path "/Users/mjc/.emacs.d/slime")
-  (setq inferior-lisp-program "/Users/mjc/sw/sbcl/bin/sbcl")
-  (require 'slime)
-  (setf slime-startup-animation nil)
-  (setf common-lisp-hyperspec-root "http://localhost/~mjc/HyperSpec/")
-  (slime-setup '(slime-repl)))
+(when (file-exists-p (emacs-dir-file "slime"))
+  (let* ((possible-lisp-locations
+          (list
+           (expand-file-name "~/sw/sbcl/bin/sbcl")))
+         (available-lisps (remove-if-not #'file-exists-p possible-lisp-locations)))
+    (when available-lisps
+      (add-to-list 'load-path (emacs-dir-file "slime"))
+      (setq inferior-lisp-program (first available-lisps))
+      (require 'slime)
+      (setf slime-startup-animation nil)
+      (setf common-lisp-hyperspec-root "http://localhost/~mjc/HyperSpec/")
+      (slime-setup '(slime-repl)))))
 
-(defun setup-d ()
-  (interactive)
+(when (file-exists-p (emacs-dir-file "d-mode.el"))
   (require 'd-mode)
   (add-to-list 'auto-mode-alist '("\\.d$" . d-mode)))
 
 (defun setup-g-lib ()
+  (interactive)
   (load-library "g")
   (setq g-user-email "mike.casinghino@gmail.com"))
 
 (defun setup-jdee ()
-  (add-to-list 'load-path "~/.emacs.d/jdee-2.4.0.1/lisp")
-  (add-to-list 'load-path "~/.emacs.d/cedet-1.0/common")
-  (load-file "~/.emacs.d/cedet-1.0/common/cedet.el")
-  (add-to-list 'load-path "~/.emacs.d/elib-1.0")
-  (require 'jde))
+  (interactive)
+  (if (file-exists-p (emacs-dir-file "jdee-2.4.0.1"))
+      (progn
+        (add-to-list 'load-path (emacs-dir-file "jdee-2.4.0.1/lisp"))
+        (add-to-list 'load-path (emacs-dir-file "cedet-1.0/common"))
+        (load-file (emacs-dir-file "cedet-1.0/common/cedet.el"))
+        (add-to-list 'load-path (emacs-dir-file "elib-1.0"))
+        (require 'jde))
+    (message "Couldn't find directory %s" (emacs-dir-file "jdee-2.4.0.1"))))
 
 ;; Mode Hooks
 (defun mjc-c-mode-hook ()
