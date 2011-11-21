@@ -112,9 +112,12 @@
    (setenv "PATH" (concat "C:\\cygwin\\bin:" (getenv "PATH")))
    (setenv "DISPLAY" nil))
   (t
-   (warn (format "System type %a not recognized" system-type))))
+   (warn (format "System type '%a' not recognized" system-type))))
 
-;;; Various programming modes
+;;; Various programming modes and settings
+(which-function-mode 1)
+(add-to-list 'which-func-modes 'lisp-mode)
+
 (add-to-list 'auto-mode-alist '("\\.asd$" . lisp-mode))
 (defun make-dir-file (base part)
   (expand-file-name

@@ -6,3 +6,4 @@ ocaml
 paredit.el
 server-location
 slime
+auto-save-list
