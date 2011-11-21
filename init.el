@@ -5,8 +5,8 @@
 ;;; Font selection and colors
 (condition-case nil
     (let ((my-fonts
-           '("Monaco-11" "Mensch-8" "Consolas-10"
-             "Inconsolata-13" "Andale Mono-12")))
+           '("Inconsolata-14" "Consolas-10" "Monaco-12" "Mensch-8" 
+              "Andale Mono-12")))
       (flet ((set-first-font (fonts)
                             (cond
                              ((null fonts) nil)
@@ -180,7 +180,7 @@
 
 ;; Mode Hooks
 (defun mjc-c-mode-hook ()
-  (whitespace mode 1)
+  (whitespace-mode 1)
   (setq c-default-style "k&r")
   (setq comment-start "//")
   (setq comment-end "")
@@ -188,13 +188,13 @@
   (setq c-basic-offset 4))
 
 (defun mjc-c++-mode-hook ()
-  (whitespace mode 1)
+  (whitespace-mode 1)
   (setq c-default-style "stroustrup")
   (setq comment-start "//")
   (setq comment-end ""))
 
 (defun mjc-d-mode-hook ()
-  (whitespace mode 1)
+  (whitespace-mode 1)
   (setq c-default-style "k&r")
   (setq tab-width 4)
   (setq c-basic-offset 4)
