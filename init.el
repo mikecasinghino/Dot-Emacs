@@ -5,18 +5,20 @@
 ;;; Font selection and colors
 (condition-case nil
     (let ((my-fonts
-           '("Inconsolata-14" "Consolas-10" "Monaco-12" "Mensch-8" 
-              "Andale Mono-12")))
+           '("DejaVu Sans Mono-9"
+             "Bitstream Vera Sans Mono-9"
+             "Consolas-10"
+             "Mensch-10")))
       (flet ((set-first-font (fonts)
-                            (cond
-                             ((null fonts) nil)
-                             ((x-list-fonts (car fonts))
-                              (set-default-font (car fonts)))
-                             (t
-                              (set-first-font (cdr fonts))))))
-           (set-first-font my-fonts)))
+               (cond
+                ((null fonts) nil)
+                ((x-list-fonts (car fonts))
+                 (set-default-font (car fonts)))
+                (t
+                 (set-first-font (cdr fonts))))))
+        (set-first-font my-fonts)))
   (error nil))
-; Test: ~ _ - 0 O 1 i l | ! ` '
+; Test: ~ _ - . , 0 O 1 i l | ! ` '
 
 (defun get-current-font ()
   (let ((pair (assoc 'font (frame-parameters))))
@@ -57,7 +59,8 @@
 (recentf-mode 1)
 (setq recentf-max-saved-items 120)
 (blink-cursor-mode 1)
-(setq bookmark-default-file (expand-file-name "~/.emacs.d/bookmarks") bookmark-save-flag 1)
+(setq bookmark-default-file (expand-file-name "~/.emacs.d/bookmarks"))
+(setq bookmark-save-flag 1)
 (windmove-default-keybindings)
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
@@ -66,10 +69,15 @@
 (setq calendar-longitude -117.1)
 (setq calendar-location-name "San Diego, CA")
 ;(bbdb-initialize)
+(setq whitespace-line-column 80)
+(setq whitespace-style
+      '(face tabs trailing lines space-before-tab newline
+        indentation empty space-after-tab tab-mark))
+(whitespace-mode 1)
 
 (defmacro safe-off (mode)
   "Call the function mode with arg -1 if it is fboundp"
-  `(if (fboundp (quote ,mode))
+  `(if (fboundp ',mode)
        (,mode -1)))
 
 (safe-off scroll-bar-mode)
@@ -81,6 +89,7 @@
 (global-set-key "\C-x\C-k" 'kill-region)
 (global-set-key "\C-xY" 'copy-region-as-kill)
 
+;;; Aliases
 (defalias 'cb-yank 'clipboard-yank)
 (defalias 'dml 'delete-matching-lines)
 (defalias 'ffp 'find-file-at-point)
@@ -94,11 +103,6 @@
 (defalias 'stw 'toggle-show-trailing-whitespace)
 (defalias 'wsm 'whitespace-mode)
 
-(setq whitespace-line-column 80)
-(setq whitespace-style
-      '(face tabs trailing lines space-before-tab newline
-        indentation empty space-after-tab tab-mark))
-
 ;;; System specific
 (case system-type
   ('darwin
@@ -109,8 +113,9 @@
        (menu-bar-mode nil)))
   ('gnu/linux)
   ('windows-nt
-   (setenv "PATH" (concat "C:\\cygwin\\bin:" (getenv "PATH")))
-   (setenv "DISPLAY" nil))
+   (setenv "DISPLAY" nil)
+   (when (file-exists-p "C:\\cygwin\\bin")
+     (setenv "PATH" (concat "C:\\cygwin\\bin" path-separator (getenv "PATH")))))
   (t
    (warn (format "System type '%a' not recognized" system-type))))
 
@@ -149,7 +154,8 @@
   (let* ((possible-lisp-locations
           (list
            (expand-file-name "~/sw/sbcl/bin/sbcl")))
-         (available-lisps (remove-if-not #'file-exists-p possible-lisp-locations)))
+         (available-lisps
+          (remove-if-not #'file-exists-p possible-lisp-locations)))
     (when available-lisps
       (add-to-list 'load-path (emacs-dir-file "slime"))
       (setq inferior-lisp-program (first available-lisps))
@@ -180,7 +186,6 @@
 
 ;; Mode Hooks
 (defun mjc-c-mode-hook ()
-  (whitespace-mode 1)
   (setq c-default-style "k&r")
   (setq comment-start "//")
   (setq comment-end "")
@@ -188,7 +193,6 @@
   (setq c-basic-offset 4))
 
 (defun mjc-c++-mode-hook ()
-  (whitespace-mode 1)
   (setq c-default-style "stroustrup")
   (setq comment-start "//")
   (setq comment-end ""))
@@ -205,9 +209,14 @@
 (add-hook 'c++-mode-hook 'mjc-c++-mode-hook)
 (add-hook 'd-mode-hook 'mjc-d-mode-hook)
 
+(when (file-exists-p (emacs-dir-file "cc-mode"))
+  (add-to-list 'load-path (emacs-dir-file "cc-mode"))
+  (require 'cc-mode))
+
 ;; My code
-(add-to-list 'load-path (expand-file-name "~/.emacs.d"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/mjc"))
+(add-to-list 'load-path (emacs-dir-file ""))
+(add-to-list 'load-path (emacs-dir-file "mjc"))
+
 (require 'mjc-utils)
 (require 'mjc-L3)
 (require 'cfun-comment)

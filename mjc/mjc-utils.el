@@ -259,7 +259,7 @@ it if it looks like a date in the form 2008-01-31"
   (let ((path (getenv "PATH"))
         (cpath "C:\\cygwin\\bin"))
     (unless (string-match "cygwin" path)
-      (setenv "PATH" (concat path ";" cpath)))))
+      (setenv "PATH" (concat path path-separator cpath)))))
 
 (defun write-string-to-file (string fname)
   (with-temp-buffer

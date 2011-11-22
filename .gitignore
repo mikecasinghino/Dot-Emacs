@@ -8,3 +8,5 @@ server-location
 slime
 auto-save-list
 semanticdb
+cc-mode
+server
