@@ -10,12 +10,12 @@
              "Consolas-10"
              "Mensch-10")))
       (flet ((set-first-font (fonts)
-                 (cond
-                  ((null fonts) nil)
-                  ((x-list-fonts (car fonts))
-                   (set-default-font (car fonts)))
-                  (t
-                   (set-first-font (cdr fonts))))))
+               (cond
+                ((null fonts) nil)
+                ((x-list-fonts (car fonts))
+                 (set-default-font (car fonts)))
+                (t
+                 (set-first-font (cdr fonts))))))
         (set-first-font my-fonts)))
   (error nil))
 ; Test: ~ _ - . , 0 O 1 i l | ! ` '
