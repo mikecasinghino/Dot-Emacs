@@ -88,6 +88,7 @@
 (global-set-key "\C-w" 'backward-kill-word)
 (global-set-key "\C-x\C-k" 'kill-region)
 (global-set-key "\C-xY" 'copy-region-as-kill)
+(global-set-key "\C-x\C-c" 'delete-frame)
 
 ;;; Aliases
 (defalias 'cb-yank 'clipboard-yank)
@@ -110,7 +111,8 @@
    (setq ns-command-modifier 'meta)
    (setq ns-right-alternate-modifier 'control)
    (if (fboundp 'menu-bar-mode)
-       (menu-bar-mode nil)))
+       (menu-bar-mode nil))
+   (global-set-key "\M-`" 'other-frame))
   ('gnu/linux)
   ('windows-nt
    (setenv "DISPLAY" nil)
