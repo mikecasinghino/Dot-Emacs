@@ -2,10 +2,13 @@
 (require 'cl)
 (server-start)
 
+(setq hostname
+      (replace-regexp-in-string "\\..*" "" (system-name)))
+
 ;;; Font selection and colors
 (condition-case nil
     (let ((my-fonts
-           '("DejaVu Sans Mono-9"
+           '("DejaVu Sans Mono-12"
              "Bitstream Vera Sans Mono-9"
              "Consolas-10"
              "Mensch-10")))
@@ -43,7 +46,7 @@
 
 (require 'dired-x)
 ;(require 'wtf)
-;(require 'remember)
+(require 'remember)
 ;(require 'bbdb)
 
 ;;; Preferences
@@ -103,13 +106,14 @@
 (defalias 'rtw 'remove-trailing-whitespace)
 (defalias 'stw 'toggle-show-trailing-whitespace)
 (defalias 'wsm 'whitespace-mode)
+(defalias 'sbke 'save-buffers-kill-emacs)
 
 ;;; System specific
 (case system-type
   ('darwin
-   (setenv "SBCL_HOME" (expand-file-name "~/sw/sbcl/lib/sbcl"))
    (setq ns-command-modifier 'meta)
    (setq ns-right-alternate-modifier 'control)
+   (global-set-key "\M-n" 'make-frame)
    (if (fboundp 'menu-bar-mode)
        (menu-bar-mode nil))
    (global-set-key "\M-`" 'other-frame))
@@ -138,6 +142,9 @@
   (autoload 'js2-mode "js2" nil t)
   (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode)))
 
+(when (file-exists-p (emacs-dir-file "ecb"))
+  (add-to-list 'load-path (emacs-dir-file "ecb")))
+
 (defun setup-ocaml ()
   (interactive)
   (add-to-list 'load-path (emacs-dir-file "ocaml"))
@@ -155,7 +162,7 @@
 (when (file-exists-p (emacs-dir-file "slime"))
   (let* ((possible-lisp-locations
           (list
-           (expand-file-name "~/sw/sbcl/bin/sbcl")))
+           (expand-file-name "~/sw/bin/sbcl")))
          (available-lisps
           (remove-if-not #'file-exists-p possible-lisp-locations)))
     (when available-lisps
