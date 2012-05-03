@@ -6,3 +6,73 @@ occur & multi-occur
 subword-mode
 imenu
 rgrep
+facemenu-remove-face-props
+(setq font-lock-maximum-decoration
+  '((c-mode . 1) (c++-mode . 1) (t . 1)))
+; Control how split-window-sensibly works
+(setq split-height-threshold 100)
+balance-windows: C-x +
+enlarge-window:  C-x ^
+shrink-window:   c-x -
+Move cursor around window: M-r
+isearch C-s C-r moves to /beginning/ of the search
+control line wrapping: ttl (toggle-truncate-lines)
+mouse-avoidance-mode
+set-buffer-file-coding-system
+(setq-default indent-tabs-mode t)
+virtual-dired
+key-chord-define-global ;; define keyboard chords!
+other-window
+
+;; Keep ido from jumping to another frame
+ido-default-file-method   ;; C-h v these vars for possible values
+ido-default-buffer-method
+tab-to-tab-stop M-i
+
+EShell
+------
+egrep
+
+Calendar
+--------
+goto today: .
+list holidays: h
+goto date: g d
+count days in region: M-=
+
+Calc
+----
+yank top calc value      : C-x * y
+comma groupings          : d g
+change grouping char     : d , \
+switch out of calc       : C-x * o
+switch into calc         : C-x * *
+pop 2nd entry from stack : M-DEL
+infinity mode            : m i
+negate                   : n
+square root              : Q
+reciprical               : &
+negate                   : n
+floor                    : F
+ln                       : L
+logBase                  : B
+exp(x)                   : E
+10^x                     : H E
+store variable           : s s
+store top (pop)          : s t
+recall variable          : s r
+simplify and subst       : =
+set expression equal to  : a =
+
+H d applies display settings to proceeding entries
+H d 6 <SPC>  copies the top stack entry, displaying it in hex
+
+trail commands -
+reset trail : t ]
+yank trail  : t y
+trail next  : t n
+
+time commands - (t [CAPITAL])
+
+functions -
+f - h : hypotenuse

@@ -5,10 +5,10 @@
 ;;; Font selection and colors
 (condition-case nil
     (let ((my-fonts
-           '("DejaVu Sans Mono-9"
-             "Bitstream Vera Sans Mono-9"
-             "Consolas-10"
-             "Mensch-10")))
+           '("DejaVu Sans Mono-8"
+             "Bitstream Vera Sans Mono-8"
+             "Consolas-8"
+             "Mensch-8")))
       (flet ((set-first-font (fonts)
                (cond
                 ((null fonts) nil)
@@ -42,8 +42,8 @@
                 (font . ,(get-current-font)))))
 
 (require 'dired-x)
+(require 'remember)
 ;(require 'wtf)
-;(require 'remember)
 ;(require 'bbdb)
 
 ;;; Preferences
@@ -62,18 +62,21 @@
 (setq bookmark-default-file (expand-file-name "~/.emacs.d/bookmarks"))
 (setq bookmark-save-flag 1)
 (windmove-default-keybindings)
+(mouse-avoidance-mode 'jump)
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.rkt$" . scheme-mode))
 (setq calendar-latitude 32.7)
 (setq calendar-longitude -117.1)
 (setq calendar-location-name "San Diego, CA")
+(setq calendar-mark-holidays-flag t)
+(setq calendar-mark-diary-entries-flag t)
 ;(bbdb-initialize)
-(setq whitespace-line-column 80)
+(setq whitespace-line-column 100)
 (setq whitespace-style
-      '(face tabs trailing lines space-before-tab newline
-        indentation empty space-after-tab tab-mark))
+      '(face trailing lines-tail empty tab-mark))
 (whitespace-mode 1)
+(put 'scroll-left 'disabled nil)
 
 (defmacro safe-off (mode)
   "Call the function mode with arg -1 if it is fboundp"
@@ -88,9 +91,13 @@
 (global-set-key "\C-w" 'backward-kill-word)
 (global-set-key "\C-x\C-k" 'kill-region)
 (global-set-key "\C-xY" 'copy-region-as-kill)
+(global-set-key "\C-x1" 'delete-other-windows-vertically)
+(global-set-key "\C-x!" 'delete-other-windows)
 (global-set-key "\C-x\C-c" 'delete-frame)
+; execute save-buffers-kill-emacs to really exit
 
 ;;; Aliases
+(defalias 'cb 'clipboard-kill-ring-save)
 (defalias 'cb-yank 'clipboard-yank)
 (defalias 'dml 'delete-matching-lines)
 (defalias 'ffp 'find-file-at-point)
@@ -100,9 +107,16 @@
 (defalias 'qrr 'query-replace-regexp)
 (defalias 'rof 'recentf-open-files)
 (defalias 'rr 'replace-regexp)
-(defalias 'rtw 'remove-trailing-whitespace)
+(defalias 'dtw 'delete-trailing-whitespace)
 (defalias 'stw 'toggle-show-trailing-whitespace)
+(defalias 'ttl 'toggle-truncate-lines)
 (defalias 'wsm 'whitespace-mode)
+(defalias 'sbke 'save-buffers-kill-emacs)
+(defun toggle-tabs ()
+  "Toggle between using tabs/spaces for indentation"
+  (interactive)
+  (setq indent-tabs-mode (not indent-tabs-mode))
+  (message "tabs mode %s" (if indent-tabs-mode "on" "off")))
 
 ;;; System specific
 (case system-type
@@ -116,16 +130,41 @@
   ('gnu/linux)
   ('windows-nt
    (setenv "DISPLAY" nil)
-   (when (file-exists-p "C:\\cygwin\\bin")
-     (setenv "PATH" (concat "C:\\cygwin\\bin" path-separator (getenv "PATH")))))
+   (setq split-height-threshold 100)
+   (when (file-exists-p "C:/bin")
+     (setenv "PATH" (concat "C:\\bin" path-separator (getenv "PATH")))
+     (add-to-list 'exec-path "c:/bin")))
   (t
    (warn (format "System type '%a' not recognized" system-type))))
+
+;; Major mode hooks
+; Info directory path
+(add-hook 'Info-mode-hook
+          (lambda ()
+            (dolist (p (list "C:/usr/share/info"
+                             "/usr/share/info"
+                             "/usr/local/share/info"
+                             (expand-file-name "~/sw/usr/share/info")))
+              (when (file-exists-p p)
+                  (add-to-list 'Info-directory-list p t)))))
+
+; Make calendar window a dedicated window
+; (might be better to tweak the window selection algorithm
+;  variables so that buffers don't open in tiny windows)
+(add-hook 'calendar-initial-window-hook
+  (lambda ()
+    (let ((calwins (get-buffer-window-list "*Calendar*")))
+      (when (= (length calwins) 1)
+        (set-window-dedicated-p (first calwins) t)))
+    (define-key calendar-mode-map "q" 'delete-window)))
 
 ;;; Various programming modes and settings
 (which-function-mode 1)
 (add-to-list 'which-func-modes 'lisp-mode)
 
 (add-to-list 'auto-mode-alist '("\\.asd$" . lisp-mode))
+(add-to-list 'auto-mode-alist '("\\.h$" . c++-mode))
+
 (defun make-dir-file (base part)
   (expand-file-name
    (concat (file-name-as-directory base)
@@ -133,6 +172,9 @@
 
 (defun emacs-dir-file (part) (make-dir-file "~/.emacs.d" part))
 (defun home-dir-file (part) (make-dir-file "~" part))
+
+(add-to-list 'load-path (emacs-dir-file "ecb"))
+;(require 'ecb)
 
 (when (file-exists-p (expand-file-name (emacs-dir-file "js2.el")))
   (autoload 'js2-mode "js2" nil t)
@@ -144,7 +186,7 @@
   (add-to-list 'auto-mode-alist '("\\.ml[iyl]?$" . caml-mode))
   (require 'ocaml)
   (autoload 'caml-mode "ocaml" (interactive)
-    "Major mode for editing Caml code." t)
+    "Major mode for editing oCaml code." t)
   (autoload 'camldebug "camldebug" (interactive) "Debug caml mode"))
 
 (defun setup-racket ()
@@ -155,7 +197,9 @@
 (when (file-exists-p (emacs-dir-file "slime"))
   (let* ((possible-lisp-locations
           (list
-           (expand-file-name "~/sw/sbcl/bin/sbcl")))
+           (expand-file-name "~/sw/sbcl/bin/sbcl")
+           "C:/PROGRA~2/clisp-2.49/clisp.exe"
+           "C:/PROGRA~2/STEELB~1/101F4D~1.53/sbcl.exe"))
          (available-lisps
           (remove-if-not #'file-exists-p possible-lisp-locations)))
     (when available-lisps
