@@ -231,27 +231,37 @@
     (message "Couldn't find directory %s" (emacs-dir-file "jdee-2.4.0.1"))))
 
 ;; Mode Hooks
-(defun mjc-c-mode-hook ()
-  (setq c-default-style "k&r")
+(setq c-default-style '((java-mode . "java")
+                        (awk-mode . "awk")
+                        (other . "k&r")))
+
+(defun mjc-c-mode-common-hook ()
   (setq comment-start "//")
   (setq comment-end "")
   (setq tab-width 4)
   (setq c-basic-offset 4))
 
+(defun incontrol-src-file-p (fname)
+  (string-match "InControl-Build" fname))
+
 (defun mjc-c++-mode-hook ()
-  (setq c-default-style "stroustrup")
-  (setq comment-start "//")
-  (setq comment-end ""))
+  (c-set-style "stroustrup")
+  (c-set-offset 'innamespace 0)
+  (when t
+    (dolist (item '((inclass ++)
+                    (access-label -)
+                    (case-label +)
+                    (inline-open 0)))
+      (apply 'c-set-offset item))))
 
 (defun mjc-d-mode-hook ()
   (whitespace-mode 1)
-  (setq c-default-style "k&r")
   (setq tab-width 4)
   (setq c-basic-offset 4)
   (setq comment-start "//")
   (setq comment-end ""))
 
-(add-hook 'c-mode-common-hook 'mjc-c-mode-hook)
+(add-hook 'c-mode-common-hook 'mjc-c-mode-common-hook)
 (add-hook 'c++-mode-hook 'mjc-c++-mode-hook)
 (add-hook 'd-mode-hook 'mjc-d-mode-hook)
 
