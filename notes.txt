@@ -29,6 +29,21 @@ ido-default-file-method   ;; C-h v these vars for possible values
 ido-default-buffer-method
 tab-to-tab-stop M-i
 
+CC Mode
+-------
+c-echo-syntactic-information-p   see syntactic context in the minibuffer on TAB
+C-c C-S c-show-syntactic-information
+C-c C-O c-set-offset
+C-c C-q c-indent-defun
+C-c C-l toggle electric indent (indening when typing semi-colons, colons, and braces)
+  also: put (setq-default c-electric-flag nil) in .emacs
+C-c C-\ c-backslash-region
+
+Org Mode
+--------
+C-c C-k show-branches
+C-c C-u outline-up-heading
+
 EShell
 ------
 egrep
