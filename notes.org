@@ -1,5 +1,4 @@
-General
--------
+* General
 auto-revert-tail-mode
 string-rectangle
 set-window-dedicated-p
@@ -33,8 +32,7 @@ ido-default-file-method   ;; C-h v these vars for possible values
 ido-default-buffer-method
 tab-to-tab-stop M-i
 
-Research Topics
----------------
+* Research Topics
 BBDB 
 Org Mode - definitions
 Easy customization - store variables in a separate config file
@@ -47,8 +45,7 @@ Mail and News
 Picture Mode (Artist Mode)
 Eshell research and documentation (should work as well as gnu screen)
 
-Keyboard Macros
----------------
+* Keyboard Macros
 C-x (  begin kb macro
 C-x )  end kb macro, with a prefix argument, repeats the macro N times
        after defining it.
@@ -57,8 +54,7 @@ C-x e  execute latest macro, or if defining a macro, end the definition
 C-x C-k  prefix argument for operating on the Keyboard Macro Ring
 See Emacs info section 21.7 - Stepwise Editing a Keyboard Macro
 
-CC Mode
--------
+* CC Mode
 c-echo-syntactic-information-p   see syntactic context in the minibuffer on TAB
 C-c C-S c-show-syntactic-information
 C-c C-O c-set-offset
@@ -67,48 +63,46 @@ C-c C-l toggle electric indent (indening when typing semi-colons, colons, and br
   also: put (setq-default c-electric-flag nil) in .emacs
 C-c C-\ c-backslash-region
 
-Org Mode
---------
+* Org Mode
 C-c C-k show-branches
 C-c C-u outline-up-heading
 C-c C-c update dynamic block at point
 org-indent-mode -> better formatting for org mode
 show-subtree -> expand everything under this branch
 
-EShell
-------
+* EShell
 egrep
 
-Calendar
---------
+* Calendar
 goto today: .
 list holidays: h
 goto date: g d
 count days in region: M-=
 
-Calc
-----
-yank top calc value      : C-x * y
-comma groupings          : d g
-change grouping char     : d , \
-switch out of calc       : C-x * o
-switch into calc         : C-x * *
-pop 2nd entry from stack : M-DEL
-infinity mode            : m i
-negate                   : n
-square root              : Q
-reciprical               : &
-negate                   : n
-floor                    : F
-ln                       : L
-logBase                  : B
-exp(x)                   : E
-10^x                     : H E
-store variable           : s s
-store top (pop)          : s t
-recall variable          : s r
-simplify and subst       : =
-set expression equal to  : a =
+* Calc
+| Action                   | Key     |
+|--------------------------+---------|
+| yank top calc value      | C-x * y |
+| comma groupings          | d g     |
+| change grouping char     | d , \   |
+| switch out of calc       | C-x * o |
+| switch into calc         | C-x * * |
+| pop 2nd entry from stack | M-DEL   |
+| infinity mode            | m i     |
+| negate                   | n       |
+| square root              | Q       |
+| reciprical               | &       |
+| negate                   | n       |
+| floor                    | F       |
+| ln                       | L       |
+| logBase                  | B       |
+| exp(x)                   | E       |
+| 10^x                     | H E     |
+| store variable           | s s     |
+| store top (pop)          | s t     |
+| recall variable          | s r     |
+| simplify and subst       | =       |
+| set expression equal to  | a =     |
 
 H d applies display settings to proceeding entries
 H d 6 <SPC>  copies the top stack entry, displaying it in hex
