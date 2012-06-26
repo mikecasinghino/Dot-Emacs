@@ -45,6 +45,10 @@ Mail and News
 Picture Mode (Artist Mode)
 Eshell research and documentation (should work as well as gnu screen)
 
+* Regexp
+  [[elisp:(and (describe-function%20'isearch-forward) t)][isearch-forward]] key bindings
+
+
 * Keyboard Macros
 C-x (  begin kb macro
 C-x )  end kb macro, with a prefix argument, repeats the macro N times
