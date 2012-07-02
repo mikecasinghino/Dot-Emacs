@@ -51,7 +51,10 @@
 (setq initial-scratch-message "")
 (line-number-mode 1)
 (column-number-mode 1)
+(blink-cursor-mode -1)
 (ido-mode t)
+(setq ido-default-buffer-method 'selected-window
+      ido-default-file-method 'selected-window)
 (put 'narrow-to-region 'disabled nil)
 (setq-default make-backup-files nil)
 (setq-default indent-tabs-mode nil)
@@ -141,12 +144,15 @@
 ; Info directory path
 (add-hook 'Info-mode-hook
           (lambda ()
-            (dolist (p (list "C:/usr/share/info"
+            (dolist (p (list (file-truename  (concat invocation-directory "../info/"))
+                             (expand-file-name "~/sw/share/info")
+                             "C:/cygwin/usr/share/info"
+                             "C:/usr/share/info"
                              "/usr/share/info"
                              "/usr/local/share/info"
                              (expand-file-name "~/sw/usr/share/info")))
               (when (file-exists-p p)
-                  (add-to-list 'Info-directory-list p t)))))
+                  (add-to-list 'Info-directory-list (file-truename p) t)))))
 
 ; Make calendar window a dedicated window
 ; (might be better to tweak the window selection algorithm
