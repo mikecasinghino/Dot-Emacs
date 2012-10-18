@@ -336,6 +336,36 @@ in the active buffer"
 (defun gtypify-buffer ()
   "Turn the text of a buffer into a gtypist speed drill"
   (interactive)
+  (save-excursion
+    (buffer-to-ascii)
+    (fill-all-paragraphs)
+    (goto-char (point-min))
+    (let ((counter 0))
+      (insert (format "*:P%d" (incf counter)))
+      (insert "\nS:")
+      (forward-line)
+      (while (not (eql (point) (point-max)))
+        (if (looking-at "^$")
+            (progn
+              (incf counter)
+              (while (looking-at "^$")
+                (kill-line))
+              (insert (format "*:P%d\nS:" counter))
+              (forward-line))
+          (progn
+            (insert " :")
+            (forward-line))))
+      (goto-char (point-min))
+      (insert "B:")
+      (date)
+      (insert "\n")
+      (insert "M: [UP=RETURN_LABEL|_EXIT] \"Speed Test\"\n")
+      (dotimes (i counter)
+        (insert (format " :P%d \"Paragraph %d\"\n" (1+ i) (1+ i)))))))
+
+(defun gtypify-buffer-old ()
+  "Turn the text of a buffer into a gtypist speed drill"
+  (interactive)
   (fill-all-paragraphs)
   (buffer-to-ascii)
   (save-excursion
@@ -346,12 +376,20 @@ in the active buffer"
     (date)
     (insert "\n")
     (insert "S:")
-    (replace-regexp "^" " :")))
+    (replace-regexp "^" " :")
+    (goto-char (point-min))
+    (while (re-search-forward "^ :$" (point-max) t)
+      (next-line)
+      (beginning-of-line)
+      (delete-char 1)
+      (insert "S"))
+    (goto-char (point-min))
+    (flush-lines "^ :$")))
 
-(defun dbl-click ()
-  "Run 'start' on the current file"
-  (interactive)
-  (start-process "start" "*start*" "c:/bin/cygstart" (buffer-file-name)))
+(defun dbl-click (fname)
+  "Run 'start' on a file, defaults to the current file"
+  (interactive "ffile: ")
+  (start-process "start" "*start*" "c:/bin/cygstart" fname))
 
 (defun xp ()
   "Open an explorer window for the current file"
@@ -392,5 +430,20 @@ in the active buffer"
       (re-search-backward "^r[[:digit:]]+")
       (re-search-forward "| 20[[:digit:][:digit:]]")
       (message (current-word)))))
+
+(defun remove-dos-eol ()
+  "Do not show ^M in files containing mixed UNIX and DOS line endings."
+  (interactive)
+  (setq buffer-display-table (make-display-table))
+  (aset buffer-display-table ?\^M []))
+
+(defun delete-frame-or-exit ()
+  "If this is the only frame then exit, otherwise delete this frame"
+  (interactive)
+  (if (> (length (frame-list)) 1)
+      (delete-frame)
+    (if (y-or-n-p-with-timeout "Really exit Emacs? " 3 nil)
+      (save-buffers-kill-emacs)
+      (message ""))))
 
 (provide 'mjc-utils)

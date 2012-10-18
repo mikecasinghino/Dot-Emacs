@@ -1,4 +1,5 @@
 * General
+visual-line-mode
 auto-revert-tail-mode
 string-rectangle
 set-window-dedicated-p
@@ -44,6 +45,7 @@ Abbrevs
 Mail and News
 Picture Mode (Artist Mode)
 Eshell research and documentation (should work as well as gnu screen)
+[[info:emacs#Coding systems][Coding Systems]]
 
 * Regexp
   [[elisp:(and (describe-function%20'isearch-forward) t)][isearch-forward]] key bindings

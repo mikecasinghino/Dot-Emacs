@@ -41,9 +41,18 @@
                 (cursor-color . "green")
                 (font . ,(get-current-font)))))
 
+;; Utility function for specifying directories
+(defun make-dir-file (base part)
+  (expand-file-name
+   (concat (file-name-as-directory base)
+           part)))
+(defun emacs-dir-file (part) (make-dir-file "~/.emacs.d" part))
+(defun home-dir-file (part) (make-dir-file "~" part))
+
+(add-to-list 'load-path (emacs-dir-file ""))
 (require 'dired-x)
 (require 'remember)
-;(require 'wtf)
+(require 'wtf)
 ;(require 'bbdb)
 
 ;;; Preferences
@@ -96,12 +105,13 @@
 (global-set-key "\C-xY" 'copy-region-as-kill)
 (global-set-key "\C-x1" 'delete-other-windows-vertically)
 (global-set-key "\C-x!" 'delete-other-windows)
-(global-set-key "\C-x\C-c" 'delete-frame)
+;(global-set-key "\C-x\C-c" 'delete-frame)
 ; execute save-buffers-kill-emacs to really exit
 
 ;;; Aliases
-(defalias 'cb 'clipboard-kill-ring-save)
+(defalias 'cbs 'clipboard-kill-ring-save)
 (defalias 'cb-yank 'clipboard-yank)
+(defalias 'cby 'clipboard-yank)
 (defalias 'dml 'delete-matching-lines)
 (defalias 'ffp 'find-file-at-point)
 (defalias 'flm 'font-lock-mode)
@@ -110,11 +120,13 @@
 (defalias 'qrr 'query-replace-regexp)
 (defalias 'rof 'recentf-open-files)
 (defalias 'rr 'replace-regexp)
+(defalias 'rs 'replace-string)
 (defalias 'dtw 'delete-trailing-whitespace)
 (defalias 'stw 'toggle-show-trailing-whitespace)
 (defalias 'ttl 'toggle-truncate-lines)
 (defalias 'wsm 'whitespace-mode)
-(defalias 'sbke 'save-buffers-kill-emacs)
+
+;(defalias 'sbke 'save-buffers-kill-emacs)
 (defun toggle-tabs ()
   "Toggle between using tabs/spaces for indentation"
   (interactive)
@@ -170,14 +182,6 @@
 
 (add-to-list 'auto-mode-alist '("\\.asd$" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.h$" . c++-mode))
-
-(defun make-dir-file (base part)
-  (expand-file-name
-   (concat (file-name-as-directory base)
-           part)))
-
-(defun emacs-dir-file (part) (make-dir-file "~/.emacs.d" part))
-(defun home-dir-file (part) (make-dir-file "~" part))
 
 (add-to-list 'load-path (emacs-dir-file "ecb"))
 ;(require 'ecb)
@@ -247,13 +251,13 @@
   (setq tab-width 4)
   (setq c-basic-offset 4))
 
-(defun incontrol-src-file-p (fname)
+(defun incontrol-tree-p (fname)
   (string-match "InControl-Build" fname))
 
 (defun mjc-c++-mode-hook ()
   (c-set-style "stroustrup")
   (c-set-offset 'innamespace 0)
-  (when t
+  (when (incontrol-tree-p (buffer-file-name))
     (dolist (item '((inclass ++)
                     (access-label -)
                     (case-label +)
@@ -276,13 +280,28 @@
   (require 'cc-mode))
 
 ;; My code
-(add-to-list 'load-path (emacs-dir-file ""))
 (add-to-list 'load-path (emacs-dir-file "mjc"))
 
 (require 'mjc-utils)
 (require 'mjc-L3)
 (require 'cfun-comment)
 
+(defalias 'rde 'remove-dos-eol)
+
 ;; These are in mjc-utils
 (global-set-key "\C-c*" 'forward-next-word-under-point)
 (global-set-key "\C-c#" 'backward-next-word-under-point)
+(global-set-key "\C-x\C-c" 'delete-frame-or-exit)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(wtf-custom-alist (quote (("CCB" . "change control board") ("IA" . "information assurance") ("IPT" . "integrated product team") ("ODSA" . "operational data storage and analysis") ("ROM" . "rough order of magnitude")))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
