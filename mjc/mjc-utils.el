@@ -305,9 +305,8 @@ in the active buffer"
 (defun insert-line-above ()
   "Inserts a line above the current line and moves point there"
   (interactive)
-  (goto-char (line-beginning-position))
-  (insert "\n")
-  (previous-line))
+  (beginning-of-line)
+  (open-line 1))
 
 (defun buffer-to-ascii ()
   "Translate fancy punctuation characters into standard ascii"

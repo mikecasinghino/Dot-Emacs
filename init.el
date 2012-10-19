@@ -92,6 +92,7 @@
       '(face trailing lines-tail empty tab-mark))
 (whitespace-mode 1)
 (put 'scroll-left 'disabled nil)
+(setq split-height-threshold 200)
 
 (defmacro safe-off (mode)
   "Call the function mode with arg -1 if it is fboundp"
@@ -142,6 +143,10 @@
   ('darwin
    (setq ns-command-modifier 'meta)
    (setq ns-right-alternate-modifier 'control)
+   (when (file-exists-p (expand-file-name "~/sw/bin"))
+     (add-to-list 'exec-path (expand-file-name "~/sw/bin")))
+     ;; (setf eshell-path-env (concat eshell-path-env ":"
+     ;;                               (expand-file-name "~/sw/bin"))))
    (global-set-key "\M-n" 'make-frame)
    (if (fboundp 'menu-bar-mode)
        (menu-bar-mode nil))
@@ -190,6 +195,11 @@
 (add-to-list 'load-path (emacs-dir-file "ecb"))
 ;(require 'ecb)
 
+(defun mjc-info-load-hook ()
+  (let ((d (expand-file-name "~/sw/share/info")))
+    (when (file-exists-p d)
+      (add-to-list 'Info-directory-list d))))
+
 (when (file-exists-p (expand-file-name (emacs-dir-file "js2.el")))
   (autoload 'js2-mode "js2" nil t)
   (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode)))
@@ -211,6 +221,8 @@
   (load-file (emacs-dir-file "geiser-0.1.3/elisp/geiser.el"))
   (setq geiser-racket-binary (home-dir-file "sw/Racket v5.2/bin/racket")))
 
+(setenv "SBCL_HOME" "/Users/mjc/sw/lib/sbcl")
+(load (expand-file-name "~/quicklisp/slime-helper.el"))
 (when (file-exists-p (emacs-dir-file "slime"))
   (let* ((possible-lisp-locations
           (list
@@ -299,6 +311,7 @@
 (global-set-key "\C-c*" 'forward-next-word-under-point)
 (global-set-key "\C-c#" 'backward-next-word-under-point)
 (global-set-key "\C-x\C-c" 'delete-frame-or-exit)
+(global-set-key "\C-o" 'insert-line-above)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -306,9 +319,3 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(wtf-custom-alist (quote (("CCB" . "change control board") ("IA" . "information assurance") ("IPT" . "integrated product team") ("ODSA" . "operational data storage and analysis") ("ROM" . "rough order of magnitude")))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
