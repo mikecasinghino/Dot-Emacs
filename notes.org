@@ -1,0 +1,124 @@
+* General
+visual-line-mode
+auto-revert-tail-mode
+string-rectangle
+set-window-dedicated-p
+yasnippets
+occur & multi-occur
+subword-mode
+imenu
+rgrep
+facemenu-remove-face-props
+(setq font-lock-maximum-decoration
+  '((c-mode . 1) (c++-mode . 1) (t . 1)))
+; Control how split-window-sensibly works
+(setq split-height-threshold 100)
+balance-windows: C-x +
+enlarge-window:  C-x ^
+shrink-window:   c-x -
+Move cursor around window: M-r
+isearch C-s C-r moves to /beginning/ of the search
+control line wrapping: ttl (toggle-truncate-lines)
+mouse-avoidance-mode
+set-buffer-file-coding-system
+(setq-default indent-tabs-mode t)
+virtual-dired
+key-chord-define-global ;; define keyboard chords!
+other-window
+New info window <*info-1*> C-u 1 C-h i
+Scroll-lock-mode - minor mode for scrolling like 'less'
+
+;; Keep ido from jumping to another frame
+ido-default-file-method   ;; C-h v these vars for possible values
+ido-default-buffer-method
+tab-to-tab-stop M-i
+
+* Research Topics
+BBDB 
+Org Mode - definitions
+Easy customization - store variables in a separate config file
+Themes and per computer font selection
+Commands available during a search (ie. switch to regexp)
+Info to Html and pdf for software documentation
+EDE mode
+Abbrevs
+Mail and News
+Picture Mode (Artist Mode)
+Eshell research and documentation (should work as well as gnu screen)
+[[info:emacs#Coding systems][Coding Systems]]
+
+* Regexp
+  [[elisp:(and (describe-function%20'isearch-forward) t)][isearch-forward]] key bindings
+
+
+* Keyboard Macros
+C-x (  begin kb macro
+C-x )  end kb macro, with a prefix argument, repeats the macro N times
+       after defining it.
+C-x e  execute latest macro, or if defining a macro, end the definition
+       and call it. Press 'e' repeatedly after C-x e to repeat the macro
+C-x C-k  prefix argument for operating on the Keyboard Macro Ring
+See Emacs info section 21.7 - Stepwise Editing a Keyboard Macro
+
+* CC Mode
+c-echo-syntactic-information-p   see syntactic context in the minibuffer on TAB
+C-c C-S c-show-syntactic-information
+C-c C-O c-set-offset
+C-c C-q c-indent-defun
+C-c C-l toggle electric indent (indening when typing semi-colons, colons, and braces)
+  also: put (setq-default c-electric-flag nil) in .emacs
+C-c C-\ c-backslash-region
+
+* Org Mode
+C-c C-k show-branches
+C-c C-u outline-up-heading
+C-c C-c update dynamic block at point
+org-indent-mode -> better formatting for org mode
+show-subtree -> expand everything under this branch
+
+* EShell
+egrep
+
+* Calendar
+goto today: .
+list holidays: h
+goto date: g d
+count days in region: M-=
+
+* Calc
+| Action                   | Key     |
+|--------------------------+---------|
+| yank top calc value      | C-x * y |
+| comma groupings          | d g     |
+| change grouping char     | d , \   |
+| switch out of calc       | C-x * o |
+| switch into calc         | C-x * * |
+| pop 2nd entry from stack | M-DEL   |
+| infinity mode            | m i     |
+| negate                   | n       |
+| square root              | Q       |
+| reciprical               | &       |
+| negate                   | n       |
+| floor                    | F       |
+| ln                       | L       |
+| logBase                  | B       |
+| exp(x)                   | E       |
+| 10^x                     | H E     |
+| store variable           | s s     |
+| store top (pop)          | s t     |
+| recall variable          | s r     |
+| simplify and subst       | =       |
+| set expression equal to  | a =     |
+
+H d applies display settings to proceeding entries
+H d 6 <SPC>  copies the top stack entry, displaying it in hex
+
+trail commands -
+reset trail : t ]
+yank trail  : t y
+trail next  : t n
+
+time commands - (t [CAPITAL])
+
+functions -
+f - h : hypotenuse

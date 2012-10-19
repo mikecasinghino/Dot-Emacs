@@ -9,11 +9,15 @@
                 (b1 (window-buffer w1))
                 (b2 (window-buffer w2))
                 (s1 (window-start w1))
-                (s2 (window-start w2)))
+                (s2 (window-start w2))
+                (w1-selected (eq (selected-window) w1)))
            (set-window-buffer w1 b2)
            (set-window-buffer w2 b1)
            (set-window-start w1 s2)
-           (set-window-start w2 s1)))))
+           (set-window-start w2 s1)
+           (if w1-selected
+               (select-window w2)
+             (select-window w1))))))
 
 ;; These next two helped during the transition from vim
 (defun forward-next-word-under-point ()
@@ -174,12 +178,6 @@ it if it looks like a date in the form 2008-01-31"
       (message "trailing whitespace enabled")
       (message "trailing whitespace disabled")))
 
-(defun remove-trailing-whitespace ()
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (replace-regexp "\\s-+\n$" "\n")))
-
 (defun memberize (str)
   (concat "m" (upcase (substring str 0 1)) (substring str 1)))
 
@@ -204,13 +202,29 @@ it if it looks like a date in the form 2008-01-31"
         (when (string-equal pdir dir2)
           (funcall open-fn hfile))))))
 
+(defun find-ch-here (other-win-p look-for-c-file-p)
+    (let* ((base (file-name-sans-extension (buffer-file-name)))
+           (open-fn (if other-win-p 'find-file-other-window 'find-file))
+           (exts (if look-for-c-file-p '(".c" ".cpp") '(".h" ".hpp")))
+           (hfiles (remove-if-not #'file-exists-p
+                           (mapcar #'(lambda (x) (concat base x)) exts)))
+           (the-file (car hfiles)))
+      (when the-file
+        (funcall open-fn the-file))))
+
 (defun find-h (arg)
+  "Look in some relative paths for the header to the file open in
+the active buffer"
   (interactive "P")
-  (find-ch arg "inc/" "src" ".h"))
+  (unless (find-ch arg "inc/" "src" ".h")
+    (find-ch-here arg nil)))
 
 (defun find-c (arg)
+  "Look in some relative paths for the c file for the header open
+in the active buffer"
   (interactive "P")
-  (find-ch arg "src/" "inc" ".cpp"))
+  (unless (find-ch arg "src/" "inc" ".cpp")
+    (find-ch-here arg t)))
 
 (defun camelify ()
   (interactive)
@@ -224,8 +238,8 @@ it if it looks like a date in the form 2008-01-31"
 (defun term-here ()
   (interactive)
   (if (not (null (getenv "DISPLAY")))
-      (message "DISPLAY variable is set to \'%S\'" (getenv "DISPLAY"))
     (let* ((cmd (format "cd \"%s\" && exec /bin/zsh -i" default-directory))
+      (message "DISPLAY variable is set to \'%S\'" (getenv "DISPLAY"))
            (args (list "-sl" "1500"
                        "-fn" "Consolas-14"
                        "-geometry" "100x35"
@@ -233,12 +247,12 @@ it if it looks like a date in the form 2008-01-31"
                        "-fg" "green"
                        "+sb" "-e"
                        "zsh" "--login" "-c" cmd)))
-      (apply 'start-process "rxvt" nil "C:/cygwin/bin/rxvt.exe" args))))
+      (apply 'start-process "rxvt" nil "C:/bin/rxvt.exe" args))))
 
 (defun lookup ()
   "Lookup the current word at dictionary.reference.com"
   (interactive)
-  (browse-url (concat "http://dictionary.reference.com/browse/"
+  (browse-url (concat "http://www.merriam-webster.com/dictionary/"
                       (current-word))))
 
 (defun show-path (&optional path)
@@ -253,13 +267,34 @@ it if it looks like a date in the form 2008-01-31"
         (princ p)
         (terpri)))))
 
-(defun append-cygwin-path ()
-  "Append C:\\cygwin\\bin to the path environment variable"
+(defun is-windows-p ()
+  (eql system-type 'windows-nt))
+
+(defun in-path-p (dirname)
+  "Checks whether 'dirname' is in the PATH env var"
+  (let ((pathvar (getenv "PATH")))
+    (when (is-windows-p)
+      (setq pathvar (upcase pathvar))
+      (setq dirname (upcase dirname)))
+    (let ((paths (split-string pathvar path-separator)))
+      (member dirname paths))))
+
+(defun append-path (dirname)
+  "Append dirname onto the PATH env var unless it's already in it"
   (interactive)
-  (let ((path (getenv "PATH"))
-        (cpath "C:\\cygwin\\bin"))
-    (unless (string-match "cygwin" path)
-      (setenv "PATH" (concat path path-separator cpath)))))
+  (when (not (in-path-p dirname))
+    (setenv "PATH" (concat (getenv "PATH") path-separator dirname))))
+
+(defun prepend-path (dirname)
+  "Prepend dirname onto the PATH env var unless it's already in it"
+  (interactive)
+  (when (not (in-path-p dirname))
+    (setenv "PATH" (concat path-separator dirname (getenv "PATH")))))
+
+(defun append-cygwin-path ()
+  "Append C:\\bin to the path environment variable"
+  (interactive)
+  (append-path "C:\\bin"))
 
 (defun write-string-to-file (string fname)
   (with-temp-buffer
@@ -301,6 +336,36 @@ it if it looks like a date in the form 2008-01-31"
 (defun gtypify-buffer ()
   "Turn the text of a buffer into a gtypist speed drill"
   (interactive)
+  (save-excursion
+    (buffer-to-ascii)
+    (fill-all-paragraphs)
+    (goto-char (point-min))
+    (let ((counter 0))
+      (insert (format "*:P%d" (incf counter)))
+      (insert "\nS:")
+      (forward-line)
+      (while (not (eql (point) (point-max)))
+        (if (looking-at "^$")
+            (progn
+              (incf counter)
+              (while (looking-at "^$")
+                (kill-line))
+              (insert (format "*:P%d\nS:" counter))
+              (forward-line))
+          (progn
+            (insert " :")
+            (forward-line))))
+      (goto-char (point-min))
+      (insert "B:")
+      (date)
+      (insert "\n")
+      (insert "M: [UP=RETURN_LABEL|_EXIT] \"Speed Test\"\n")
+      (dotimes (i counter)
+        (insert (format " :P%d \"Paragraph %d\"\n" (1+ i) (1+ i)))))))
+
+(defun gtypify-buffer-old ()
+  "Turn the text of a buffer into a gtypist speed drill"
+  (interactive)
   (fill-all-paragraphs)
   (buffer-to-ascii)
   (save-excursion
@@ -311,6 +376,74 @@ it if it looks like a date in the form 2008-01-31"
     (date)
     (insert "\n")
     (insert "S:")
-    (replace-regexp "^" " :")))
+    (replace-regexp "^" " :")
+    (goto-char (point-min))
+    (while (re-search-forward "^ :$" (point-max) t)
+      (next-line)
+      (beginning-of-line)
+      (delete-char 1)
+      (insert "S"))
+    (goto-char (point-min))
+    (flush-lines "^ :$")))
+
+(defun dbl-click (fname)
+  "Run 'start' on a file, defaults to the current file"
+  (interactive "ffile: ")
+  (start-process "start" "*start*" "c:/bin/cygstart" fname))
+
+(defun xp ()
+  "Open an explorer window for the current file"
+  (interactive)
+  (let ((arg (concat "/select,"
+                     (replace-regexp-in-string "/" "\\\\" (buffer-file-name)))))
+    ;(message arg)))
+    (start-process "xp" "*xp*" "explorer" arg)))
+
+(defun cb-directory ()
+  "Copy the directory of the current buffer's file into the clipboard"
+  (interactive)
+  (kill-new (file-name-directory (buffer-file-name))))
+
+(defun cb-filename ()
+  "Copy the name of the current buffer's file into the clipboard"
+  (interactive)
+  (kill-new (buffer-file-name)))
+
+(setq *svn-prog-location* "C:\\PROGRA~2\\COLLAB~1\\SUBVER~1\\svn.exe")
+(defun svn-diff (arg)
+  "Run svn diff on the current buffer (or directory) using winmerge"
+  (interactive "P")
+  (let ((target (if arg
+                    (file-name-directory (buffer-file-name))
+                  (buffer-file-name))))
+    (start-process "svn-diff" "*svn*"
+                   *svn-prog-location* "diff"
+                   "--diff-cmd=svn-diffmerge.bat"
+                   target)))
+
+(defun svn-oldest ()
+  (interactive)
+  (let ((fname (cb-filename)))
+    (with-temp-buffer
+      (shell-command (concat *svn-prog-location* " log " fname) t)
+      (goto-char (point-max))
+      (re-search-backward "^r[[:digit:]]+")
+      (re-search-forward "| 20[[:digit:][:digit:]]")
+      (message (current-word)))))
+
+(defun remove-dos-eol ()
+  "Do not show ^M in files containing mixed UNIX and DOS line endings."
+  (interactive)
+  (setq buffer-display-table (make-display-table))
+  (aset buffer-display-table ?\^M []))
+
+(defun delete-frame-or-exit ()
+  "If this is the only frame then exit, otherwise delete this frame"
+  (interactive)
+  (if (> (length (frame-list)) 1)
+      (delete-frame)
+    (if (y-or-n-p-with-timeout "Really exit Emacs? " 3 nil)
+      (save-buffers-kill-emacs)
+      (message ""))))
 
 (provide 'mjc-utils)

@@ -1,8 +1,0 @@
-auto-revert-tail-mode
-string-rectangle
-set-window-dedicated-p
-yasnippets
-occur & multi-occur
-subword-mode
-imenu
-rgrep
