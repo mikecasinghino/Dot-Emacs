@@ -8,8 +8,8 @@
 ;;; Font selection and colors
 (condition-case nil
     (let ((my-fonts
-           '("DejaVu Sans Mono-12"
-             "Bitstream Vera Sans Mono-9"
+           '("DejaVu Sans Mono-8"
+             "Bitstream Vera Sans Mono-8"
              "Consolas-10"
              "Mensch-10")))
       (flet ((set-first-font (fonts)
@@ -114,7 +114,6 @@
 
 ;;; Aliases
 (defalias 'cbs 'clipboard-kill-ring-save)
-(defalias 'cb-yank 'clipboard-yank)
 (defalias 'cby 'clipboard-yank)
 (defalias 'dml 'delete-matching-lines)
 (defalias 'ffp 'find-file-at-point)
@@ -129,9 +128,7 @@
 (defalias 'stw 'toggle-show-trailing-whitespace)
 (defalias 'ttl 'toggle-truncate-lines)
 (defalias 'wsm 'whitespace-mode)
-(defalias 'sbke 'save-buffers-kill-emacs)
 
-;(defalias 'sbke 'save-buffers-kill-emacs)
 (defun toggle-tabs ()
   "Toggle between using tabs/spaces for indentation"
   (interactive)
@@ -157,7 +154,10 @@
    (setq split-height-threshold 100)
    (when (file-exists-p "C:/bin")
      (setenv "PATH" (concat "C:\\bin" path-separator (getenv "PATH")))
-     (add-to-list 'exec-path "c:/bin")))
+     (add-to-list 'exec-path "c:/bin"))
+   (when (file-exists-p "C:/cygwin/bin")
+     (setenv "PATH" (concat "C:\\cygwin\\bin" path-separator (getenv "PATH")))
+     (add-to-list 'exec-path "c:/cygwin/bin")))
   (t
    (warn (format "System type '%a' not recognized" system-type))))
 
@@ -221,8 +221,8 @@
   (load-file (emacs-dir-file "geiser-0.1.3/elisp/geiser.el"))
   (setq geiser-racket-binary (home-dir-file "sw/Racket v5.2/bin/racket")))
 
-(setenv "SBCL_HOME" "/Users/mjc/sw/lib/sbcl")
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
+;(setenv "SBCL_HOME" "/Users/mjc/sw/lib/sbcl")
+;(load (expand-file-name "~/quicklisp/slime-helper.el"))
 (when (file-exists-p (emacs-dir-file "slime"))
   (let* ((possible-lisp-locations
           (list

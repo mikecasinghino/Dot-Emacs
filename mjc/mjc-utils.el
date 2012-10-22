@@ -235,19 +235,19 @@ in the active buffer"
                      (cons 'camelify-match nil)
                      t t nil)))
 
-(defun term-here ()
-  (interactive)
-  (if (not (null (getenv "DISPLAY")))
-    (let* ((cmd (format "cd \"%s\" && exec /bin/zsh -i" default-directory))
-      (message "DISPLAY variable is set to \'%S\'" (getenv "DISPLAY"))
-           (args (list "-sl" "1500"
-                       "-fn" "Consolas-14"
-                       "-geometry" "100x35"
-                       "-bg" "black"
-                       "-fg" "green"
-                       "+sb" "-e"
-                       "zsh" "--login" "-c" cmd)))
-      (apply 'start-process "rxvt" nil "C:/bin/rxvt.exe" args))))
+;; (defun term-here ()
+;;   (interactive)
+;;   (if (not (null (getenv "DISPLAY")))
+;;     (let* ((cmd (format "cd \"%s\" && exec /bin/zsh -i" default-directory))
+;;       (message "DISPLAY variable is set to \'%S\'" (getenv "DISPLAY"))
+;;            (args (list "-sl" "1500"
+;;                        "-fn" "Consolas-14"
+;;                        "-geometry" "100x35"
+;;                        "-bg" "black"
+;;                        "-fg" "green"
+;;                        "+sb" "-e"
+;;                        "zsh" "--login" "-c" cmd)))
+;;       (apply 'start-process "rxvt" nil "C:/bin/rxvt.exe" args))))
 
 (defun lookup ()
   "Lookup the current word at dictionary.reference.com"
@@ -362,29 +362,6 @@ in the active buffer"
       (dotimes (i counter)
         (insert (format " :P%d \"Paragraph %d\"\n" (1+ i) (1+ i)))))))
 
-(defun gtypify-buffer-old ()
-  "Turn the text of a buffer into a gtypist speed drill"
-  (interactive)
-  (fill-all-paragraphs)
-  (buffer-to-ascii)
-  (save-excursion
-    (goto-char (point-max))
-    (delete-blank-lines)
-    (goto-char (point-min))
-    (insert "B:")
-    (date)
-    (insert "\n")
-    (insert "S:")
-    (replace-regexp "^" " :")
-    (goto-char (point-min))
-    (while (re-search-forward "^ :$" (point-max) t)
-      (next-line)
-      (beginning-of-line)
-      (delete-char 1)
-      (insert "S"))
-    (goto-char (point-min))
-    (flush-lines "^ :$")))
-
 (defun dbl-click (fname)
   "Run 'start' on a file, defaults to the current file"
   (interactive "ffile: ")
@@ -444,5 +421,21 @@ in the active buffer"
     (if (y-or-n-p-with-timeout "Really exit Emacs? " 3 nil)
       (save-buffers-kill-emacs)
       (message ""))))
+
+(defun cb-directory ()
+  "Copy the directory of the current buffer's file into the clipboard"
+  (interactive)
+  (kill-new (file-name-directory (buffer-file-name))))
+
+(defun svn-diff (arg)
+  "Run svn diff on the current buffer (or directory) using winmerge"
+  (interactive "P")
+  (let ((target (if arg
+                    (file-name-directory (buffer-file-name))
+                  (buffer-file-name))))
+    (start-process "svn-diff" nil
+                   "svn.exe" "diff"
+                   "--diff-cmd=svn-diffmerge.bat"
+                   target)))
 
 (provide 'mjc-utils)
