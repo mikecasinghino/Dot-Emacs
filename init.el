@@ -55,7 +55,7 @@
 (add-to-list 'load-path (emacs-dir-file ""))
 (require 'dired-x)
 (require 'remember)
-(require 'wtf)
+;(require 'wtf)
 ;(require 'bbdb)
 
 ;;; Preferences
@@ -301,7 +301,7 @@
 ;; My code
 (add-to-list 'load-path (emacs-dir-file "mjc"))
 
-(require 'mjc-utils)
+(require 'utils)
 (require 'mjc-L3)
 (require 'cfun-comment)
 

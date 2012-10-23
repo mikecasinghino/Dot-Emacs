@@ -438,4 +438,4 @@ in the active buffer"
                    "--diff-cmd=svn-diffmerge.bat"
                    target)))
 
-(provide 'mjc-utils)
+(provide 'utils)
