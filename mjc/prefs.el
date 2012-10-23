@@ -1,0 +1,88 @@
+;;;; Preferences
+(setq inhibit-splash-screen t)
+(setq initial-scratch-message "")
+(line-number-mode 1)
+(column-number-mode 1)
+(blink-cursor-mode -1)
+(ido-mode t)
+(setq ido-default-buffer-method 'selected-window
+      ido-default-file-method 'selected-window)
+(put 'narrow-to-region 'disabled nil)
+(setq-default make-backup-files nil)
+(setq-default indent-tabs-mode nil)
+(setq-default require-final-newline t)
+(recentf-mode 1)
+(setq recentf-max-saved-items 120)
+(blink-cursor-mode 1)
+(setq bookmark-default-file (expand-file-name "~/.emacs.d/bookmarks"))
+(setq bookmark-save-flag 1)
+(windmove-default-keybindings)
+(mouse-avoidance-mode 'jump)
+(setq erc-hide-list '("JOIN" "PART" "QUIT"))
+(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+(add-to-list 'auto-mode-alist '("\\.rkt$" . scheme-mode))
+(setq calendar-latitude 32.7)
+(setq calendar-longitude -117.1)
+(setq calendar-location-name "San Diego, CA")
+(setq calendar-mark-holidays-flag t)
+(setq calendar-mark-diary-entries-flag t)
+;(bbdb-initialize)
+(setq whitespace-line-column 100)
+(setq whitespace-style
+      '(face trailing lines-tail empty tab-mark))
+(whitespace-mode 1)
+(put 'scroll-left 'disabled nil)
+(setq split-height-threshold 200)
+
+(defmacro safe-off (mode)
+  "Call the function mode with arg -1 if it is fboundp"
+  `(if (fboundp ',mode)
+       (,mode -1)))
+
+(safe-off scroll-bar-mode)
+(safe-off tool-bar-mode)
+(safe-off menu-bar-mode)
+(safe-off tooltip-mode)
+
+(global-set-key "\C-w" 'backward-kill-word)
+(global-set-key "\C-x\C-k" 'kill-region)
+(global-set-key "\C-xY" 'copy-region-as-kill)
+(global-set-key "\C-x1" 'delete-other-windows-vertically)
+(global-set-key "\C-x!" 'delete-other-windows)
+
+;; These are in mjc-utils
+(global-set-key "\C-c*" 'forward-next-word-under-point)
+(global-set-key "\C-c#" 'backward-next-word-under-point)
+(global-set-key "\C-x\C-c" 'delete-frame-or-exit)
+(global-set-key "\C-o" 'insert-line-above)
+
+;;; Aliases
+(defalias 'cbs 'clipboard-kill-ring-save)
+(defalias 'cby 'clipboard-yank)
+(defalias 'dml 'delete-matching-lines)
+(defalias 'ffp 'find-file-at-point)
+(defalias 'flm 'font-lock-mode)
+(defalias 'lml 'list-matching-lines)
+(defalias 'qr 'query-replace)
+(defalias 'qrr 'query-replace-regexp)
+(defalias 'rof 'recentf-open-files)
+(defalias 'rr 'replace-regexp)
+(defalias 'rs 'replace-string)
+(defalias 'dtw 'delete-trailing-whitespace)
+(defalias 'stw 'toggle-show-trailing-whitespace)
+(defalias 'ttl 'toggle-truncate-lines)
+(defalias 'wsm 'whitespace-mode)
+(defalias 'rde 'remove-dos-eol)
+
+; Not quite a theme...
+(set-background-color "black")
+(set-foreground-color "green")
+(set-cursor-color "green")
+(setq visible-bell t)
+(setq default-frame-alist
+      (append default-frame-alist
+              `((background-color . "black")
+                (foreground-color . "green")
+                (cursor-color . "green"))))
+
+(provide 'prefs)

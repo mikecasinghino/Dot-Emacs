@@ -438,4 +438,10 @@ in the active buffer"
                    "--diff-cmd=svn-diffmerge.bat"
                    target)))
 
+(defun toggle-tabs ()
+  "Toggle between using tabs/spaces for indentation"
+  (interactive)
+  (setq indent-tabs-mode (not indent-tabs-mode))
+  (message "tabs mode %s" (if indent-tabs-mode "on" "off")))
+
 (provide 'utils)

@@ -13,4 +13,4 @@ the annotated version of the file from subversion"
                             "?annotate=HEAD")))
           (browse-url url))))))
 
-(provide 'mjc-L3)
+(provide 'L3)
