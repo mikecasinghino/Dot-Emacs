@@ -105,7 +105,7 @@
 
 (defun mjc-c++-mode-hook ()
   (c-set-style "stroustrup")
-  (c-set-offset 'innamespace 0)
+  (c-set-offset 'innamespace 0))
 
 (defun mjc-d-mode-hook ()
   (whitespace-mode 1)

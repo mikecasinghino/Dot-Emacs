@@ -9,7 +9,7 @@
                (cond
                 ((null fonts) nil)
                 ((x-list-fonts (car fonts))
-                 (set-default-font (car fonts)))
+                 (set-default-font (car fonts) nil t))
                 (t
                  (set-first-font (cdr fonts))))))
         (set-first-font my-fonts)))
@@ -24,5 +24,3 @@
 (defun show-current-font ()
   (interactive)
   (message "%S" (get-current-font)))
-
-(provide 'fonts)

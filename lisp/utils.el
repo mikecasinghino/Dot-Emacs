@@ -449,5 +449,3 @@ in the active buffer"
   (interactive)
   (setq indent-tabs-mode (not indent-tabs-mode))
   (message "tabs mode %s" (if indent-tabs-mode "on" "off")))
-
-(provide 'utils)

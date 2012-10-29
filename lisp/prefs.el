@@ -33,6 +33,7 @@
 (whitespace-mode 1)
 (put 'scroll-left 'disabled nil)
 (setq split-height-threshold 200)
+(setq visible-bell t)
 
 (defmacro safe-off (mode)
   "Call the function mode with arg -1 if it is fboundp"
@@ -73,16 +74,3 @@
 (defalias 'ttl 'toggle-truncate-lines)
 (defalias 'wsm 'whitespace-mode)
 (defalias 'rde 'remove-dos-eol)
-
-; Not quite a theme...
-(set-background-color "black")
-(set-foreground-color "green")
-(set-cursor-color "green")
-(setq visible-bell t)
-(setq default-frame-alist
-      (append default-frame-alist
-              `((background-color . "black")
-                (foreground-color . "green")
-                (cursor-color . "green"))))
-
-(provide 'prefs)
