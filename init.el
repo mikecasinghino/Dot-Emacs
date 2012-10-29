@@ -44,6 +44,10 @@
   (t
    (warn (format "System type '%a' not recognized" system-type))))
 
+(let ((local-lisp-file (expand-file-name (format "~/.emacs.d/%s" hostname))))
+  (when (file-exists-p (concat local-lisp-file ".el"))
+    (load local-lisp-file)))
+
 (server-start)
 
 (custom-set-variables
