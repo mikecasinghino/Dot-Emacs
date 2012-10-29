@@ -1,7 +1,8 @@
+*.elc
+elpa/
 geiser-0.1.3
 js2-20090723b.el
 js2.el
-js2.elc
 ocaml
 paredit.el
 server-location
