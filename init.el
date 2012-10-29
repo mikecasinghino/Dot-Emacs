@@ -2,6 +2,7 @@
 (require 'cl)
 
 (setq hostname (replace-regexp-in-string "\\..*" "" (system-name)))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/mjc"))
 
 (require 'utils)

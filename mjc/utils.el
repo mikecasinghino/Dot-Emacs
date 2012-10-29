@@ -362,6 +362,12 @@ in the active buffer"
       (dotimes (i counter)
         (insert (format " :P%d \"Paragraph %d\"\n" (1+ i) (1+ i)))))))
 
+(defun find-typing-file ()
+  "Open today's typing practice file"
+  (interactive)
+  (let ((fname (format "news-%s.typ" (format-time-string "%Y-%m-%d"))))
+    (find-file (expand-file-name (concat "~/typing/" fname)))))
+
 (defun dbl-click (fname)
   "Run 'start' on a file, defaults to the current file"
   (interactive "ffile: ")
