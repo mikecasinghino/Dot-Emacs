@@ -1,7 +1,7 @@
 ;;;-*-emacs-lisp-*-
 (require 'cl)
 
-(setq hostname (replace-regexp-in-string "\\..*" "" (system-name)))
+(setq hostname (downcase (replace-regexp-in-string "\\..*" "" (system-name))))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
 
@@ -9,8 +9,6 @@
 (require 'prefs)
 (require 'fonts)
 (require 'modes)
-(require 'L3)
-(require 'cfun-comment)
 
 (require 'dired-x)
 (require 'remember)
@@ -44,7 +42,7 @@
   (t
    (warn (format "System type '%a' not recognized" system-type))))
 
-(let ((local-lisp-file (expand-file-name (format "~/.emacs.d/%s" hostname))))
+(let ((local-lisp-file (expand-file-name (format "~/.emacs.d/lisp/%s" hostname))))
   (when (file-exists-p (concat local-lisp-file ".el"))
     (load local-lisp-file)))
 
