@@ -103,18 +103,9 @@
   (setq tab-width 4)
   (setq c-basic-offset 4))
 
-(defun incontrol-tree-p (fname)
-  (string-match "InControl-Build" fname))
-
 (defun mjc-c++-mode-hook ()
   (c-set-style "stroustrup")
   (c-set-offset 'innamespace 0)
-  (when (incontrol-tree-p (buffer-file-name))
-    (dolist (item '((inclass ++)
-                    (access-label -)
-                    (case-label +)
-                    (inline-open 0)))
-      (apply 'c-set-offset item))))
 
 (defun mjc-d-mode-hook ()
   (whitespace-mode 1)
