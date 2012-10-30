@@ -37,10 +37,6 @@
       (let ((tup (param-to-tuple param)))
         (setq tuples (cons tup tuples))))))
 
-(defun cur-word ()
-  (interactive)
-  (message "curword: %s" (current-word)))
-
 (defun is-blank-line ()
   (save-excursion
     (beginning-of-line)
