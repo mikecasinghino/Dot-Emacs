@@ -28,6 +28,7 @@
 
 (add-to-list 'auto-mode-alist '("\\.asd$" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.h$" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.ml$" . sml-mode))
 (dolist (subdir (list "ecb" "ocaml" "slime"))
   (let ((dirname (expand-file-name (concat "~/.emacs.d/" subdir))))
     (when (file-exists-p dirname)
@@ -98,17 +99,22 @@
                         (other . "k&r")))
 
 (defun mjc-c-mode-common-hook ()
+  (whitespace-mode 1)
+  (setq whitespace-line-column 100)
   (setq comment-start "//")
   (setq comment-end "")
   (setq tab-width 4)
   (setq c-basic-offset 4))
 
 (defun mjc-c++-mode-hook ()
+  (whitespace-mode 1)
+  (setq whitespace-line-column 100)
   (c-set-style "stroustrup")
   (c-set-offset 'innamespace 0))
 
 (defun mjc-d-mode-hook ()
   (whitespace-mode 1)
+  (setq whitespace-line-column 80)
   (setq tab-width 4)
   (setq c-basic-offset 4)
   (setq comment-start "//")

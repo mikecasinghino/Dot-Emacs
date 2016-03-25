@@ -1,16 +1,27 @@
 ;;;-*-emacs-lisp-*-
 (require 'cl)
 
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa-stable" . "http://stable.melpa.org/packages/") t)
+(package-initialize)
+
+(load-theme 'tango-dark)
+
 (setq hostname (downcase (replace-regexp-in-string "\\..*" "" (system-name))))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/3rd"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
 
 (load "utils")
 (load "prefs")
 (load "fonts")
 (load "modes")
+(load "dbnet")
 
-(require 'dired-x)
+(add-hook 'dired-load-hook
+          (function (lambda () (load "dired-x"))))
+
+;(require 'key-chord)
 (require 'remember)
 (when (file-exists-p (expand-file-name "~/.emacs.d/wtf.el"))
   (require 'wtf))
@@ -48,5 +59,4 @@
 
 (server-start)
 (setq custom-file "~/.emacs.d/custom.el")
-(load custom-file)
-
+(global-auto-revert-mode 1)

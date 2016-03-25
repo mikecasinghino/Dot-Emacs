@@ -1,8 +1,9 @@
 ;;; Font selection and colors
 (condition-case nil
     (let ((my-fonts
-           '("DejaVu Sans Mono-12"
-             "Bitstream Vera Sans Mono-8"
+           '("Menlo Regular-12"
+             "DejaVu Sans Mono-8"
+             "Bitstream Vera Sans Mono-12"
              "Consolas-10"
              "Mensch-10")))
       (flet ((set-first-font (fonts)

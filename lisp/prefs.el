@@ -6,7 +6,8 @@
 (blink-cursor-mode -1)
 (ido-mode t)
 (setq ido-default-buffer-method 'selected-window
-      ido-default-file-method 'selected-window)
+      ido-default-file-method 'selected-window
+      ido-auto-merge-delay-time 99999)
 (put 'narrow-to-region 'disabled nil)
 (setq-default make-backup-files nil)
 (setq-default indent-tabs-mode nil)
@@ -34,6 +35,7 @@
 (put 'scroll-left 'disabled nil)
 (setq split-height-threshold 200)
 (setq visible-bell t)
+(setq linum-format "%5d \u2502 ")
 
 (defmacro safe-off (mode)
   "Call the function mode with arg -1 if it is fboundp"
@@ -56,6 +58,10 @@
 (global-set-key "\C-c#" 'backward-next-word-under-point)
 (global-set-key "\C-x\C-c" 'delete-frame-or-exit)
 (global-set-key "\C-o" 'insert-line-above)
+
+;; Fix buffer names
+(require 'uniquify)
+(setf uniquify-buffer-name-style 'post-forward)
 
 ;;; Aliases
 (defalias 'cbs 'clipboard-kill-ring-save)

@@ -19,6 +19,44 @@
                (select-window w2)
              (select-window w1))))))
 
+(defun rotate-windows ()
+  "Rotates the windows"
+  (interactive)
+  (let* ((windows (window-list))
+         (all-buffers (map 'list 'window-buffer windows))
+         (buffers (cdr all-buffers))
+         (buf1 (car all-buffers)))
+    (dolist (w windows t)
+      (if (null buffers)
+          (set-window-buffer w buf1)
+        (progn
+          (set-window-buffer w (car buffers))
+          (setf buffers (cdr buffers)))))))
+
+(defun n-columns ()
+  "Splits a single window into n equal sized columns"
+  (interactive)
+  (when (> (length (window-list)) 1)
+      (throw t "must start with single window"))
+  (let ((root (car (window-list)))
+        (col-width (floor (/ (frame-width) 3.0))))
+    (when (< col-width 72)
+        (throw t "root window too small"))
+    (let ((newin (split-window root col-width 'right)))
+      (split-window newin col-width 'right))))
+
+(defun three-columns ()
+  "Splits a single window into three equal sized columns"
+  (interactive)
+  (when (> (length (window-list)) 1)
+      (throw t "must start with single window"))
+  (let ((root (car (window-list)))
+        (col-width (floor (/ (frame-width) 3.0))))
+    (when (< col-width 72)
+        (throw t "root window too small"))
+    (let ((newin (split-window root col-width 'right)))
+      (split-window newin col-width 'right))))
+
 ;; These next two helped during the transition from vim
 (defun forward-next-word-under-point ()
   "Move forward to the next word under the point"
@@ -189,7 +227,7 @@ it if it looks like a date in the form 2008-01-31"
     (insert (memberize cw))
     (kill-word 1)))
 
-(defun find-ch (other-win-p dir1 dir2 ext)
+(defun find-rel (other-win-p dir1 dir2 ext)
   (let ((fname (buffer-file-name))
         (open-fn (if other-win-p 'find-file-other-window 'find-file)))
     (when fname
@@ -202,10 +240,13 @@ it if it looks like a date in the form 2008-01-31"
         (when (string-equal pdir dir2)
           (funcall open-fn hfile))))))
 
-(defun find-ch-here (other-win-p look-for-c-file-p)
+(defun find-rel-here (other-win-p file-type)
     (let* ((base (file-name-sans-extension (buffer-file-name)))
            (open-fn (if other-win-p 'find-file-other-window 'find-file))
-           (exts (if look-for-c-file-p '(".c" ".cpp") '(".h" ".hpp")))
+           (exts (case file-type
+                   ('c '(".c" ".cc" ".cpp"))
+                   ('h '(".h" ".hpp"))
+                   ('impl '("Impl.hpp"))))
            (hfiles (remove-if-not #'file-exists-p
                            (mapcar #'(lambda (x) (concat base x)) exts)))
            (the-file (car hfiles)))
@@ -216,15 +257,20 @@ it if it looks like a date in the form 2008-01-31"
   "Look in some relative paths for the header to the file open in
 the active buffer"
   (interactive "P")
-  (unless (find-ch arg "inc/" "src" ".h")
-    (find-ch-here arg nil)))
+  (find-rel arg "inc/" "src" ".h"))
 
 (defun find-c (arg)
   "Look in some relative paths for the c file for the header open
 in the active buffer"
   (interactive "P")
-  (unless (find-ch arg "src/" "inc" ".cpp")
-    (find-ch-here arg t)))
+  ;(unless (find-rel arg "src/" "inc" ".c")
+    (find-rel-here arg 'c))
+
+(defun find-impl (arg)
+  "Look in some relative paths for the Impl.hpp file for the file open
+in the active buffer"
+  (interactive "P")
+  (find-rel-here arg 'impl))
 
 (defun camelify ()
   (interactive)
@@ -384,12 +430,18 @@ in the active buffer"
 (defun cb-directory ()
   "Copy the directory of the current buffer's file into the clipboard"
   (interactive)
-  (kill-new (file-name-directory (buffer-file-name))))
+  (let ((dname (if (equal major-mode 'dired-mode)
+                   default-directory
+                 (file-name-directory (buffer-file-name)))))
+    (kill-new dname)))
 
 (defun cb-filename ()
   "Copy the name of the current buffer's file into the clipboard"
   (interactive)
-  (kill-new (buffer-file-name)))
+  (let ((fname (if (equal major-mode 'dired-mode)
+                   (dired-get-filename nil t)
+                 (buffer-file-name))))
+    (kill-new fname)))
 
 (setq *svn-prog-location* "C:\\PROGRA~2\\COLLAB~1\\SUBVER~1\\svn.exe")
 (defun svn-diff (arg)
@@ -449,3 +501,17 @@ in the active buffer"
   (interactive)
   (setq indent-tabs-mode (not indent-tabs-mode))
   (message "tabs mode %s" (if indent-tabs-mode "on" "off")))
+
+(defun hipchat-region (room)
+  "Send file or region to hipchat using the /code prefix"
+  (interactive "sRoom: ")
+  (let* ((fname (buffer-file-name))
+         (bmark (region-beginning))
+         (emark (region-end))
+         (bline (line-number-at-pos bmark))
+         (eline (line-number-at-pos emark))
+         (args (if (use-region-p)
+                 (list room fname (format "%d" bline) (format "%d" eline))
+               (list room fname))))
+    ;(apply 'message "/home/mc/bin/hipchat-post.js %s %s %s" args)))
+    (apply 'call-process "/home/mc/bin/hipchat-post.js" nil "*hipchat*" nil args)))

@@ -32,6 +32,7 @@ Scroll-lock-mode - minor mode for scrolling like 'less'
 ido-default-file-method   ;; C-h v these vars for possible values
 ido-default-buffer-method
 tab-to-tab-stop M-i
+uniquify
 
 * Research Topics
 BBDB 
@@ -49,7 +50,6 @@ Eshell research and documentation (should work as well as gnu screen)
 
 * Regexp
   [[elisp:(and (describe-function%20'isearch-forward) t)][isearch-forward]] key bindings
-
 
 * Keyboard Macros
 C-x (  begin kb macro
