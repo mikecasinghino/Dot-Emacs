@@ -15,12 +15,12 @@
 ; Make calendar window a dedicated window
 ; (might be better to tweak the window selection algorithm
 ;  variables so that buffers don't open in tiny windows)
-(add-hook 'calendar-initial-window-hook
-  (lambda ()
-    (let ((calwins (get-buffer-window-list "*Calendar*")))
-      (when (= (length calwins) 1)
-        (set-window-dedicated-p (first calwins) t)))
-    (define-key calendar-mode-map "q" 'delete-window)))
+;; (add-hook 'calendar-initial-window-hook
+;;   (lambda ()
+;;     (let ((calwins (get-buffer-window-list "*Calendar*")))
+;;       (when (= (length calwins) 1)
+;;         (set-window-dedicated-p (first calwins) t)))
+;;     (define-key calendar-mode-map "q" 'delete-window)))
 
 ;;; Various programming modes and settings
 (which-function-mode 1)
@@ -28,11 +28,16 @@
 
 (add-to-list 'auto-mode-alist '("\\.asd$" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.h$" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.ml$" . sml-mode))
 (dolist (subdir (list "ecb" "ocaml" "slime"))
   (let ((dirname (expand-file-name (concat "~/.emacs.d/" subdir))))
     (when (file-exists-p dirname)
       (add-to-list 'load-path dirname))))
+
+;; SML
+(setenv "SMLNJ_HOME" "/home/mc/smlnj")
+(setf sml-program-name "/home/mc/smlnj/bin/sml")
+(add-hook 'sml-mode-hook
+            'dbnet-sml-mode-hook)
 
 (defun mjc-info-load-hook ()
   (let ((d (expand-file-name "~/sw/share/info")))
@@ -42,6 +47,8 @@
 (when (file-exists-p (expand-file-name "~/.emacs.d/js2.el"))
   (autoload 'js2-mode "js2" nil t)
   (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode)))
+
+(add-to-list 'auto-mode-alist '("\\.jsx$" . jsx-mode))
 
 (defun setup-ocaml ()
   (interactive)
@@ -58,20 +65,26 @@
 
 ;(setenv "SBCL_HOME" "/Users/mjc/sw/lib/sbcl")
 ;(load (expand-file-name "~/quicklisp/slime-helper.el"))
-(when (file-exists-p (expand-file-name  "~/.emacs.d/slime"))
-  (let* ((possible-lisp-locations
-          (list
-           (expand-file-name "~/sw/sbcl/bin/sbcl")
-           "C:/PROGRA~2/clisp-2.49/clisp.exe"
-           "C:/PROGRA~2/STEELB~1/101F4D~1.53/sbcl.exe"))
-         (available-lisps
-          (remove-if-not #'file-exists-p possible-lisp-locations)))
-    (when available-lisps
-      (setq inferior-lisp-program (first available-lisps))
-      (require 'slime)
-      (setf slime-startup-animation nil)
-      (setf common-lisp-hyperspec-root "http://localhost/~mjc/HyperSpec/")
-      (slime-setup '(slime-repl)))))
+(add-hook 'slime-load-hook
+    (lambda ()
+      (setq inferior-lisp-program "sbcl")
+      (add-to-list 'slime-contribs 'slime-fancy)
+      (setq common-lisp-hyperspec-root "http://www.lispworks.com/reference/HyperSpec/")))
+
+;; (when (file-exists-p (expand-file-name  "~/.emacs.d/slime"))
+;;   (let* ((possible-lisp-locations
+;;           (list
+;;            (expand-file-name "~/sw/sbcl/bin/sbcl")
+;;            "C:/PROGRA~2/clisp-2.49/clisp.exe"
+;;            "C:/PROGRA~2/STEELB~1/101F4D~1.53/sbcl.exe"))
+;;          (available-lisps
+;;           (remove-if-not #'file-exists-p possible-lisp-locations)))
+;;     (when available-lisps
+;;       (setq inferior-lisp-program (first available-lisps))
+;;       (require 'slime)
+;;       (setf slime-startup-animation nil)
+;;       (setf common-lisp-hyperspec-root "http://localhost/~mjc/HyperSpec/")
+;;       (slime-setup '(slime-repl)))))
 
 (when (file-exists-p (expand-file-name "~/.emacs.d/d-mode.el"))
   (require 'd-mode)

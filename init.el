@@ -18,6 +18,13 @@
 (load "modes")
 (load "dbnet")
 
+(custom-set-variables
+ '(org-replace-disputed-keys t))
+
+(defun post-init-stuff () )
+
+(add-hook 'after-init-hook (lambda () (post-init-stuff)))
+
 (add-hook 'dired-load-hook
           (function (lambda () (load "dired-x"))))
 

@@ -29,7 +29,13 @@
 (defun dbnet-lgrep-aliases ()
   "Add *.cc *.hpp to grep-files-aliases"
   (interactive)
-  (add-to-list 'grep-files-aliases '("dbnet" . "*.cc *.hpp")))
+  (add-to-list 'grep-files-aliases '("dbnet" . "*.cc *.hpp"))
+  (add-to-list 'grep-files-aliases '("dbnet-sml" . "*.sig *.sml")))
+
+(defun dbnet-fix-semantic ()
+  "Add sml files to semantic-symref-filepattern-alist"
+  (interactive)
+  (push '(sml-mode "*.sml" "*.sig" "*.mldb" "*.mlb") semantic-symref-filepattern-alist))
 
 (defun buffer-file-name-to-type (types)
   "Uses the give list of '((type <regexp>) ...) to determine the file type"
@@ -72,11 +78,40 @@
   (interactive)
   (dbnet-cycle-file-type dbnet-file-type-cycle-c))
 
+(defun dbnet-build-dbfw ()
+  (interactive)
+  (if (getenv "TARADIR")
+      (compile "cd $TARADIR/obj/dbfw && build dbfw")
+    (message "TARADIR is not set")))
+
+(defun dbnet-switch-to-file-ext (ext)
+  (let ((bfn (buffer-file-name)))
+    (when bfn
+      (let ((sigfname (concat (file-name-sans-extension bfn) ext)))
+        (if (file-exists-p sigfname)
+            (find-file sigfname)
+          (message (format "no such file %s" signfame)))))))
+
+(defun dbnet-sig-file ()
+  "Switch to the .sig file for this .sml file"
+  (interactive)
+  (dbnet-switch-to-file-ext ".sig"))
+
+(defun dbnet-sml-file ()
+  "Switch to the .sml file for this .sig file"
+  (interactive)
+  (dbnet-switch-to-file-ext ".sml"))
+
+(defun dbnet-sml-mode-hook ()
+  (local-set-key (kbd "C-c i") 'dbnet-sig-file)
+  (local-set-key (kbd "C-c s") 'dbnet-sml-file))
+
 (defun dbnet-c++-mode-hook ()
   (local-set-key (kbd "C-c h") 'dbnet-h-file)
   (local-set-key (kbd "C-c j") 'dbnet-impl-file)
   (local-set-key (kbd "C-c k") 'dbnet-c-file)
   (local-set-key (kbd "C-c u") 'uncomment-region)
+  (local-set-key (kbd "<f7>") 'dbnet-build-dbfw)
   (local-unset-key (kbd "C-c C-u")))
 
 (add-hook 'c++-mode-hook 'dbnet-c++-mode-hook)

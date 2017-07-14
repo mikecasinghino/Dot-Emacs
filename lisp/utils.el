@@ -19,19 +19,61 @@
                (select-window w2)
              (select-window w1))))))
 
+;; This breaks yank, somehow
+;(defun remove-text-properties ()
+;  "Removes text properties from the current region"
+;  (interactive)
+;  ;; See also yank-excluded-properties and yank-handled-properties
+;  (set-text-properties (point) (mark) nil))
+
+(defun get-vert-wins ()
+  "Return a list of windows in sorted by left edge"
+  (sort (window-list)
+        #'(lambda (w1 w2) (< (window-left-column w1) (window-left-column w2)))))
+
+(defun swap-buffers (w1 w2)
+  "Swap the buffers in windows w1 and w2"
+  (let ((b1 (window-buffer w1))
+        (b2 (window-buffer w2)))
+    (set-window-buffer w1 b2)
+    (set-window-buffer w2 b1)))
+
+(defun swap-to-side (reverse?)
+  "Swap the current window with the window to its right"
+  (let ((wins (get-vert-wins)))
+    (when reverse?
+      (setf wins (reverse wins)))
+    (while (not (and wins (eql (selected-window) (first wins))))
+      (setf wins (cdr wins)))
+    (when (and wins (cdr wins))
+      (swap-buffers (first wins) (second wins)))))
+
+(defun swap-right ()
+  "Swap the current window with the window to its right"
+  (interactive)
+  (swap-to-side nil))
+
+(defun swap-left ()
+  "Swap the current window with the window to its left"
+  (interactive)
+  (swap-to-side t))
+
+(defun swap-ends ()
+  "Swap the windows at the ends of the frame"
+  (interactive)
+  (let ((wins (get-vert-wins)))
+    (when (< 1 (length wins))
+      (swap-buffers (first wins) (first (last wins))))))
+
+(defalias 'swap 'swap-ends)
+
 (defun rotate-windows ()
   "Rotates the windows"
   (interactive)
-  (let* ((windows (window-list))
-         (all-buffers (map 'list 'window-buffer windows))
-         (buffers (cdr all-buffers))
-         (buf1 (car all-buffers)))
-    (dolist (w windows t)
-      (if (null buffers)
-          (set-window-buffer w buf1)
-        (progn
-          (set-window-buffer w (car buffers))
-          (setf buffers (cdr buffers)))))))
+  (let* ((windows (get-vert-wins))
+         (buffers (mapcar #'window-buffer windows))
+         (buffers-swapped (append (cdr buffers) (list (car buffers)))))
+    (cl-mapcar #'set-window-buffer windows buffers-swapped)))
 
 (defun n-columns ()
   "Splits a single window into n equal sized columns"
@@ -274,7 +316,7 @@ in the active buffer"
 
 (defun camelify ()
   (interactive)
-  (flet ((camelify-match
+  (cl-flet ((camelify-match
           (data cnt)
           (upcase (substring (match-string 0) 1 2))))
     (perform-replace "_[a-z]"
@@ -435,6 +477,17 @@ in the active buffer"
                  (file-name-directory (buffer-file-name)))))
     (kill-new dname)))
 
+(defun cb-fileline ()
+  "Copy the basename of the current buffer's file and lineno into the clipboard"
+  (interactive)
+  (let ((fname (buffer-file-name))
+        (lineno (line-number-at-pos)))
+    (when fname
+      (let ((txt (concat (file-name-nondirectory fname) ":"
+                         (number-to-string lineno))))
+        (kill-new txt)
+        (message txt)))))
+
 (defun cb-filename ()
   "Copy the name of the current buffer's file into the clipboard"
   (interactive)
@@ -502,6 +555,11 @@ in the active buffer"
   (setq indent-tabs-mode (not indent-tabs-mode))
   (message "tabs mode %s" (if indent-tabs-mode "on" "off")))
 
+(defun show-window-size ()
+  "Show the width of the current window in the bar"
+  (interactive)
+  (message (format "%dx%d" (window-body-width) (window-total-height))))
+
 (defun hipchat-region (room)
   "Send file or region to hipchat using the /code prefix"
   (interactive "sRoom: ")
@@ -515,3 +573,13 @@ in the active buffer"
                (list room fname))))
     ;(apply 'message "/home/mc/bin/hipchat-post.js %s %s %s" args)))
     (apply 'call-process "/home/mc/bin/hipchat-post.js" nil "*hipchat*" nil args)))
+
+(defun mc-sml-find-syms-cmdline ()
+  (interactive)
+  (gui-set-selection
+   'PRIMARY
+   (concat "sml-file-line-syms.py " mc-sml-syms-file " " (buffer-file-name)
+           " " (number-to-string (line-number-at-pos)))))
+
+;(setq mc-sml-syms-file "/home/mc/wrk/dbfx/obj/reaction/tally_dispatcher.syms")
+
