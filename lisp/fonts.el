@@ -9,26 +9,36 @@
   (interactive)
   (message "%S" (mc-get-current-font)))
 
-(setf mc-preferred-fonts
-      '("Ubuntu Mono-8"
-        "Menlo Regular-12"
-        "DejaVu Sans Mono-8"
-        "Bitstream Vera Sans Mono-8"
-        "Consolas-10"
-        "Mensch-10"))
+(defun mc-make-font-filename (base)
+  (expand-file-name (concat "~/.emacs.d/lisp/" base ".fonts")))
+
+(defun mc-read-font-file (fname)
+  (with-temp-buffer
+    (insert-file-contents fname)
+    (read (buffer-string))))
+
+(defun mc-read-fonts ()
+  (let ((system-font-file (mc-make-font-filename (system-name))))
+    (if (file-readable-p system-font-file)
+        (mc-read-font-file system-font-file)
+      (mc-read-font-file (mc-make-font-filename "defaults")))))
 
 ;; This really should be in Xresources
 (defun mc-select-best-font ()
   (interactive)
-  (let* ((fnts (mapcan #'x-list-fonts mc-preferred-fonts))
+  (let* ((fnts (mapcan #'x-list-fonts (mc-read-fonts)))
          (norms (remove-if
-                 #'(lambda (f) (or (search "-bold-" f) (search "-oblique-" f)))
+                 #'(lambda (f) (or
+                                (search "-bold-" f)
+                                (search "-oblique-" f)
+                                (search "-italic" f)))
                  fnts))
          (font (car-safe norms)))
-    (when font
+    (if font
       (if (set-frame-font font)
           (messsage "font set to %s" font)
-        (message "unable to set font to %s" font)))))
+        (message "unable to set font to %s" font))
+      (message "couldn't find a font"))))
                                         ; Test: ~ _ - . , 0 O 1 i l | ! ` '
 (defun mc-set-best-font ()
   (interactive)

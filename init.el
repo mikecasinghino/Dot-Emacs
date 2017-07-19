@@ -37,6 +37,7 @@
 ;;; System specific
 (case system-type
   ('darwin
+   (mc-set-best-font)
    (setq ns-command-modifier 'meta)
    (setq ns-right-alternate-modifier 'control)
    (when (file-exists-p (expand-file-name "~/sw/bin"))
