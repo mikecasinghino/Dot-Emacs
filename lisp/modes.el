@@ -133,9 +133,14 @@
   (setq comment-start "//")
   (setq comment-end ""))
 
+(defun mjc-js-mode-hook ()
+  (whitespace-mode 1)
+  (local-set-key (kbd "C-c C-c") 'comment-region))
+
 (add-hook 'c-mode-common-hook 'mjc-c-mode-common-hook)
 (add-hook 'c++-mode-hook 'mjc-c++-mode-hook)
 (add-hook 'd-mode-hook 'mjc-d-mode-hook)
+(add-hook 'js-mode-hook 'mjc-js-mode-hook)
 
 (when (file-exists-p (expand-file-name "~/.emacs.d/cc-mode"))
   (add-to-list 'load-path (expand-file-name "~/.emacs.d/cc-mode"))
