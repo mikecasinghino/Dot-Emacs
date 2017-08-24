@@ -581,5 +581,4 @@ in the active buffer"
    (concat "sml-file-line-syms.py " mc-sml-syms-file " " (buffer-file-name)
            " " (number-to-string (line-number-at-pos)))))
 
-;(setq mc-sml-syms-file "/home/mc/wrk/dbfx/obj/reaction/tally_dispatcher.syms")
 

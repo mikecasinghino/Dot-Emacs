@@ -28,7 +28,6 @@
 (add-hook 'dired-load-hook
           (function (lambda () (load "dired-x"))))
 
-;(require 'key-chord)
 (require 'remember)
 (when (file-exists-p (expand-file-name "~/.emacs.d/wtf.el"))
   (require 'wtf))

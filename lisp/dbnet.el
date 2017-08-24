@@ -116,3 +116,4 @@
 
 (add-hook 'c++-mode-hook 'dbnet-c++-mode-hook)
 (eval-after-load 'grep '(dbnet-lgrep-aliases))
+;(setq mc-sml-syms-file "/home/mc/wrk/dbfx/obj/reaction/tally_dispatcher.syms")
