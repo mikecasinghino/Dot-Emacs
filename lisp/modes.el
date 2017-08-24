@@ -86,10 +86,6 @@
 ;;       (setf common-lisp-hyperspec-root "http://localhost/~mjc/HyperSpec/")
 ;;       (slime-setup '(slime-repl)))))
 
-(when (file-exists-p (expand-file-name "~/.emacs.d/d-mode.el"))
-  (require 'd-mode)
-  (add-to-list 'auto-mode-alist '("\\.d$" . d-mode)))
-
 (defun setup-g-lib ()
   (interactive)
   (load-library "g")
@@ -127,7 +123,7 @@
 
 (defun mjc-d-mode-hook ()
   (whitespace-mode 1)
-  (setq whitespace-line-column 80)
+  (setq whitespace-line-column 100)
   (setq tab-width 4)
   (setq c-basic-offset 4)
   (setq comment-start "//")
